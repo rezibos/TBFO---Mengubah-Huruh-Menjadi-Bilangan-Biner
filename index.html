@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Konversi Huruf ke Biner</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.5/sweetalert2.min.css">
+</head>
+<body>
+    <div class="logo-header">
+        <img src="asset/logoumrah.png" alt="Logo Peternakan" class="logo">
+    </div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="nav-item active" data-page="home">
+                <i class="fi fi-rr-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-page="diagram">
+                <i class="fi fi-rr-diagram-project"></i>
+                <span>Diagram</span>
+            </button>
+            <button class="nav-item" data-page="kelompok">
+                <i class="fi fi-rr-users"></i>
+                <span>Kelompok</span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Page: Home -->
+    <div class="page-content active" id="page-home">
+    <div class="container">
+        <div class="header">
+            <h1>Konversi Huruf ke Biner</h1>
+            <p>Konversi huruf A-Z dan a-z ke kode biner menggunakan Mesin Turing!</p>
+        </div>
+
+        <div class="card">
+            <h2>Konversi Huruf ke Biner</h2>
+            <div class="controls-grid">
+                <div class="form-group">
+                    <label class="label-algo">Pilih Huruf</label>
+                    <select id="letterSelect">
+                        <option value="" selected disabled>Pilih huruf (A/a - Z/z)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button id="convertBtn" class="btn-primary">
+                    <i class="fi fi-rr-refresh"></i> Konversi
+                </button>
+                <button id="clearAll" class="btn-danger">
+                    <i class="fi fi-rr-trash"></i> Hapus Semua
+                </button>
+            </div>
+        </div>
+
+        <div id="stepVisualization" class="card" style="display:none">
+            <h2>Visualisasi Langkah demi Langkah</h2>
+
+            <div class="step-controls">
+                <button id="prevStep" class="btn-secondary">
+                    <i class="fi fi-rr-arrow-left"></i> Sebelumnya
+                </button>
+                <div class="step-info"><span id="currentStep">0</span> / <span id="totalSteps">0</span></div>
+                <button id="nextStep" class="btn-secondary">
+                    Selanjutnya <i class="fi fi-rr-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="step-content">
+                <div class="tape-row">
+                    <div class="tape-box">
+                        <h3>Input Tape</h3>
+                        <div class="tape-container">
+                            <div id="inputTapeHead" class="tape-head">▼</div>
+                            <div id="inputTapeCells" class="tape-cells"></div>
+                        </div>
+                    </div>
+                    <div class="tape-box">
+                        <h3>Output Tape (Binary)</h3>
+                        <div class="tape-container">
+                            <div id="outputTapeHead" class="tape-head">▼</div>
+                            <div id="outputTapeCells" class="tape-cells"></div>
+                        </div>
+                        <div style="margin-top:8px;"><span id="completionBadge" class="badge" style="display:none;background:#10b981;color:white;">✅ Selesai</span></div>
+                    </div>
+                </div>
+
+                <div class="step-info-box" style="margin-top:16px;">
+                    <strong>State:</strong> <span id="stateDisplay">-</span>
+                    &nbsp;&nbsp; <strong>Head Pos:</strong> <span id="headPosDisplay">-</span>
+                    &nbsp;&nbsp; <strong>Action:</strong> <span id="actionDisplay">-</span>
+                </div>
+            </div>
+
+            <!-- Tabel untuk menampilkan langkah-langkah dengan pagination -->
+            <div class="table-container" id="stepsTable" style="display:none; margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>State</th>
+                            <th>Head Pos</th>
+                            <th>Action</th>
+                            <th>Move</th>
+                            <th>Output Tape</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stepsTableBody">
+                        <!-- Isi tabel akan di-generate oleh JavaScript -->
+                    </tbody>
+                </table>
+                
+                <!-- Pagination Controls -->
+                <div class="pagination-controls" style="display: none; margin-top: 20px; text-align: center; padding: 15px;">
+                    <button id="firstPage" class="btn-secondary" style="padding: 8px 12px;">
+                        <i class="fi fi-rr-angle-double-left"></i>
+                    </button>
+                    <button id="prevPage" class="btn-secondary" style="padding: 8px 12px;">
+                        <i class="fi fi-rr-angle-left"></i>
+                    </button>
+                    
+                    <span id="pageNumbers" style="margin: 0 15px; font-weight: 600; color: #2b542c;">
+                        <!-- Page numbers will be generated here -->
+                    </span>
+                    
+                    <button id="nextPage" class="btn-secondary" style="padding: 8px 12px;">
+                        <i class="fi fi-rr-angle-right"></i>
+                    </button>
+                    <button id="lastPage" class="btn-secondary" style="padding: 8px 12px;">
+                        <i class="fi fi-rr-angle-double-right"></i>
+                    </button>
+                    
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                        Menampilkan <span id="currentRange">0-0</span> dari <span id="totalStepsCount">0</span> langkah
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result" class="card" style="display:none">
+            <h2>Hasil Konversi</h2>
+            
+            <div class="result-container">
+                <div class="result-item">
+                    <h3>Huruf Input</h3>
+                    <div class="result-value" id="inputLetter">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Kode ASCII</h3>
+                    <div class="result-value" id="asciiCode">-</div>
+                </div>
+                <div class="result-item">
+                    <h3>Biner (8-bit)</h3>
+                    <div class="result-value" id="binaryResult">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- End Page: Home -->
+    
+    <!-- Page: Diagram -->
+    <div class="page-content" id="page-diagram">
+        <div class="container">
+            <div class="header">
+                <h1>Diagram Mesin Turing</h1>
+                <p>Visualisasi diagram state Mesin Turing</p>
+            </div>
+            <div class="card">
+                <div class="empty-page">
+                    <i class="fi fi-rr-diagram-project" style="font-size: 80px; color: #cbd5e0;"></i>
+                    <h3>Halaman Diagram</h3>
+                    <p>Konten diagram akan ditampilkan di sini</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page: Diagram -->
+    
+    <!-- Page: Kelompok -->
+    <div class="page-content" id="page-kelompok">
+        <div class="container">
+            <div class="header">
+                <h1>Kelompok</h1>
+                <p>Informasi anggota kelompok</p>
+            </div>
+            <div class="card">
+                <div class="empty-page">
+                    <i class="fi fi-rr-users" style="font-size: 80px; color: #cbd5e0;"></i>
+                    <h3>Halaman Kelompok</h3>
+                    <p>Informasi anggota kelompok akan ditampilkan di sini</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Page: Kelompok -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.5/sweetalert2.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

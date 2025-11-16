@@ -1,32 +1,49 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+import http.server
+import socketserver
 import os
-from core.autocorrectTBFO import turing
 
-app = Flask(__name__)
+# Konfigurasi
+PORT = 8000
+DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
-@app.route('/')
-def index():
-   return render_template('index.html')
+class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=DIRECTORY, **kwargs)
+    
+    def end_headers(self):
+        # Tambahkan header untuk cache control
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+        self.send_header('Expires', '0')
+        super().end_headers()
 
-@app.route('/process_text', methods=['POST'])
-def process_text():
-   if request.method == 'POST':
-        result = []
-        input_string = request.form['input_text']
-        print(input_string)
-        input_string = input_string.split(" ")
-        kata_terkoreksi = ""
-        res = []
-        for kata in input_string :
-            if kata != "," and kata!= " " and kata!="":
-                res =  turing(kata.lower())
-                kata_terkoreksi += res[0] + " "
-                result.append(res[1])
-        return jsonify({'hasil': kata_terkoreksi, 'proses':result})
-     
-@app.route('/gambar/<path:filename>')
-def serve_image(filename):
-    return send_from_directory(os.path.join('gambar'), filename)
+    def log_message(self, format, *args):
+        # Custom log format
+        print(f"[{self.log_date_time_string()}] {format % args}")
 
-if __name__ == '__main__':
-   app.run(debug=True)
+def run_server():
+    """Menjalankan HTTP server"""
+    handler = MyHTTPRequestHandler
+    
+    with socketserver.TCPServer(("", PORT), handler) as httpd:
+        print("=" * 60)
+        print("🚀 Server Mesin Turing - Konversi Huruf ke Biner")
+        print("=" * 60)
+        print(f"📂 Directory: {DIRECTORY}")
+        print(f"🌐 Server berjalan di: http://localhost:{PORT}")
+        print(f"🌐 Atau akses via: http://127.0.0.1:{PORT}")
+        print("=" * 60)
+        print("✅ Server aktif! Tekan CTRL+C untuk menghentikan server")
+        print("=" * 60)
+        print()
+        
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\n")
+            print("=" * 60)
+            print("🛑 Server dihentikan oleh user")
+            print("=" * 60)
+            httpd.shutdown()
+
+if __name__ == "__main__":
+    run_server()
